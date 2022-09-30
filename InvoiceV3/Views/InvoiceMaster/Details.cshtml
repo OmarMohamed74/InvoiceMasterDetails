@@ -1,0 +1,35 @@
+﻿@model InvoiceMaster
+   
+
+
+<div class="d-flex flex-row justify-content-evenly border  pt-3" >
+    <p ><b>CustomerName:</b> @Model.Customer.CustromerName </p>
+    <p><b>Serial:</b> @Model.InvoiceSerial </p>
+    <p><b>Date:</b> @Model.Date.ToString().Replace("12:00:00 AM", "")</p>
+</div>
+    
+<table class="table table-striped my-2 text-center">
+  <thead>
+    <tr>
+      <th scope="col">Product Name</th>
+      <th scope="col">Quantity</th>
+      <th scope="col">Price</th>
+
+
+    </tr>
+  </thead>
+  <tbody>
+    @foreach (var master in Model.InvoiceDetails)
+    {
+ <tr>
+   <td>@master.Products.Name</td>
+      <td>@master.Quantity</td>
+      <td>@master.SellPrice</td>
+
+    </tr>
+    }
+  </tbody>
+</table>
+
+
+

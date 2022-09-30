@@ -1,0 +1,109 @@
+﻿@using InvoiceV3.Data.PagedList
+@model IEnumerable<InvoiceMaster>
+
+
+
+@{
+    Pages pager = new Pages();
+    int pageNo = 0;
+    if (ViewBag.DataView != null)
+    {
+        pager = ViewBag.DataView;
+        pageNo = pager.CurrentPage;
+    }
+}
+
+      <a type="button" class="btn btn-outline-primary float-end my-3" asp-controller="InvoiceMaster" asp-action="Create">
+        Create Invoice
+      </a>
+
+
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">InvoiceSerial</th>
+      <th scope="col">Date</th>
+      <th scope="col">Customer</th>
+      <th scope="col"></th>
+      <th scope="col"></th>
+
+      <th scope="col" class="text-center"> Operations</th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach (var master in Model)
+    {
+ <tr>
+      <td>@master.Id</td>
+      <td>@master.InvoiceSerial</td>
+      <td>@master.Date.ToString().Replace("12:00:00 AM", "")</td>
+      <td>@master.Customer.CustromerName</td>
+      <td></td>
+      <td></td>
+      <form asp-controller="InvoiceMaster"asp-action="Delete" asp-route-Id="@master.Id">
+      <td class="text-center">
+      <a class="btn btn-primary " asp-controller="InvoiceMaster"asp-action="Details" asp-route-id="@master.Id">
+          
+          <i class="fa-solid fa-circle-info"></i>
+          Details</a>
+      <a class ="btn btn-success" asp-controller="InvoiceMaster" asp-action="Update" asp-route-id=@master.Id >
+          <i class="fa-solid fa-pen-to-square"></i>
+          Update</a>
+      <button class ="btn btn-danger" onclick="return confirm('Are you sure you want to delete : @master.Customer.CustromerName')" >
+          <i class="fa fa-trash" aria-hidden="true"></i>
+          Delete</button>
+      </td>
+     
+      </form> 
+    </tr>
+    }
+
+ 
+  </tbody>
+</table>
+
+    <div class="row">
+    @if (pager.TotalPages > 0)
+    {
+        <ul class="d-flex pagination justify-content-center">
+            @if (pager.CurrentPage>1)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-action="index"  asp-route-Page="1">
+                       First
+                    </a>
+                </li> 
+                <li>
+                    <a class="page-link"  asp-action="index"  asp-route-Page="@(pager.CurrentPage-1)">
+                       Previous
+                    </a>
+                </li>   
+            }
+            @for (var i = 1; i <= pager.EndPage; i++)
+            {
+                <li class="page-item @(i==pager.CurrentPage?"active":" ")">
+                     <a class="page-link"  asp-action="index"  asp-route-Page="@i">
+                        @i
+                     </a>
+                </li>  
+            }
+            @if (pager.CurrentPage<pager.TotalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-action="index" asp-route-Page="@(pager.CurrentPage+1)">
+                        Next
+                    </a>
+                </li> 
+                <li>
+                      <a class="page-link" asp-action="index"  asp-route-Page="@pager.TotalPages">
+                        Last
+                      </a>
+                </li>   
+            }
+        </ul>
+    }
+
+    </div>
+

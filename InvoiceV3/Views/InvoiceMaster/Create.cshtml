@@ -1,0 +1,222 @@
+﻿
+@model IEnumerable<InvoiceDetails>
+
+
+
+<div class="container">
+    <form id="invoiceMasterDetails "asp-controller="InvoiceMaster" asp-action="saveInvoice">
+        
+    <div class="form-group">
+          <label for="exampleFormControlInput1">Invocie Serial</label>
+          <input type="text" class="form-control" id="InvoiceSerial">
+    </div>
+
+    <div class="form-group">
+          <label >Date</label>
+          <input type="date" class="form-control" id="Date" >
+    </div>
+
+
+
+     <div class="form-group">
+          <label >CustomerName</label>
+          <select class="form-control"  id="CustomerId">
+              <option value="" selected> Choose... </option>
+      @foreach (var item in ViewBag.CustomerList)
+        {
+            
+            <option  value="@item.Id" >@item.CustromerName</option>
+        }
+    </select>
+      
+    </div>
+
+   <table class="table">
+  <thead class="thead-dark">
+    <tr >
+      <th scope="col"></th>
+      <th scope="col">ProductName</th>
+      <th scope="col">Quantity</th>
+      <th scope="col">Price</th>
+      <th scope="col"  class="text-center">Opertaions</th>
+     
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row"></th>
+      <td>
+              <select class="form-control dropdown-toggle"  name="productId" id="productSelect">
+              <option selected>  Choose...</option>
+            @foreach (var item in ViewBag.productList)
+                {
+            
+             <option  value="@item.Id" >@item.Name</option>
+                 }
+    </select>
+      </td>
+      <td>
+          <input type="number" class="form-control" name="Quantity" id="Quantity" >
+          
+      </td>
+      <td>
+          <input type="number" class="form-control" name="SellPrice" id="prdtPriceInput" >
+      </td>
+      <td class="text-center">
+          <a class ="btn btn-success"   onclick="add()">
+          <i class="fa-solid fa-pen-to-square addProduct"></i>Add</a>
+
+          </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+<table class="table productList" id="productTable">
+        <thead class="thead-dark">
+            <tr >
+                <th scope="col">ProductId</th>
+                <th scope="col">Product Name</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Price</th>
+                <th scope="col">Total Price</th>
+                <th scope="col"  class="text-center">Opertaions</th> 
+            </tr>
+        </thead>
+        <tbody>
+           
+        </tbody>
+</table>
+
+<a class ="btn btn-success float-end my-5 createInvoice "  onclick="productTableTrToArray()" >
+    <i class="fa-solid fa-pen-to-square "></i>
+    Create Invoice</a>
+</form>
+</div>
+    
+
+
+
+<script src="~/lib/jquery/jquery.min.js"></script>
+<script>
+     //Get price of selected product
+    $(function(){      
+      $("#productSelect").change(function(){
+      $.ajax({
+            url:"/InvoiceMaster/GetPriceOfProduct",
+            type:"GET",
+            data:{id: $("#productSelect").val()},
+            dataType:"json",
+            success:function(result){
+         
+                $("#prdtPriceInput").val(result);
+            },
+            error:function(xhr,ajaxOptions,thrownError){
+                alert(xhr.status),
+                alert(thrownError)
+            }
+        });
+
+        });
+    });
+
+    // Remove table row 
+
+    $("#productTable").on("click","#deleteTr",function(){
+    
+    $(this).closest("tr").remove();
+    
+    });
+
+
+    // Add product as a Tr in table
+
+    function add(){
+        var productId = $("#productSelect option:selected").val();
+        var ProductName = $("#productSelect option:selected").text();
+        var Quantity = $("#Quantity").val();
+        var Price = $("#prdtPriceInput").val();
+        var totalPrice = Price*Quantity;
+
+        var tableRt= "<tr><td>" + productId + "</td><td>"+ ProductName +"</td><td >" + Quantity + "</td><td >" + Price + "</td><td>"+ totalPrice + "</td><td class='float-right' ><a class='btn btn-danger float-end mx-4 ' id='deleteTr' ><i class='fa-solid fa-circle-info float-start'></i>Remove</a></td> </tr>"
+       
+        $(".productList tbody")
+        .append(tableRt);
+
+        $("#Quantity").val('');
+    };
+
+
+
+
+    // Array includes values of td inside table body
+
+
+    var arrayOfThisRow = [];
+    var invoiceMaster;
+    function productTableTrToArray(){
+        var InvoiceSerial = $("#InvoiceSerial").val();
+
+        var Date = $("#Date").val();
+                
+        var CustomerId =$("#CustomerId").val();
+        
+        invoiceMaster={
+        InvoiceSerial:InvoiceSerial,
+        Date:Date,
+        CustomerId:CustomerId
+        }
+       
+        $("#productTable tbody tr").each(function(){
+            
+            // values inside td
+
+            var productId = $(this).find('td:eq(0)').text();  
+            var Quantity = $(this).find('td:eq(2)').text();
+            var Price = $(this).find('td:eq(3)').text();
+         
+            
+            arrayOfThisRow.push({
+                productId : productId,
+                SellPrice : Price,
+                Quantity :Quantity
+                
+            });
+
+        });
+    }
+
+    // Ajax call saveinvoice action to bind the data
+
+    $(document).on("click",".createInvoice",(e)=>{
+        var customerName = $("#CustomerId option:selected").text();
+        
+        $.ajax({
+            url:"/InvoiceMaster/saveInvoice",
+            type:"POST",
+            data:{invoice:arrayOfThisRow,master:invoiceMaster},
+            dataType:'json',
+            success:function(){
+                    alert("Invoice of " +  customerName  + " has been saved Succefully!!!!");
+                    location.reload();
+
+            },
+            error:function(xhr,ajaxOptions,thrownError){
+                alert(xhr.status);
+                alert(thrownError);
+
+            },
+            
+            
+        })
+
+
+    });
+
+
+
+</script>
+
+
+
+
