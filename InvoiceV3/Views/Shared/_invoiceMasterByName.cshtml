@@ -1,0 +1,36 @@
+﻿@model IEnumerable<InvoiceMaster>
+
+
+
+    <div class="text-center my-4">
+            <h3 > All Invoices realted to this customer</h3>
+
+    </div>
+   
+        <table class="table   my-2 text-center">
+  <thead>
+    <tr class="bg-info">
+      <td scope="col">Id</td>
+      <th scope="col">InvoiceSerial</th>
+      <th scope="col">Date</th>
+      <th scope="col">CustomerName</th>
+
+
+    </tr>
+  </thead>
+  <tbody>
+    @foreach (var master in Model)
+    {
+ <tr class="table-info">
+
+   <td>@master.Id</td>
+      <td>@master.InvoiceSerial</td>
+      <td>@master.Date.ToString().Replace("12:00:00 AM", "")</td>
+      <td>@master.Customer.CustromerName</td>
+
+    </tr>
+    }
+  </tbody>
+</table>
+ 
+

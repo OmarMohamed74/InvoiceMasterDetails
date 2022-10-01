@@ -84,12 +84,29 @@ namespace InvoiceV3.Controllers
         }
 
         [HttpPost]
-        public JsonResult Update( InvoiceViewModel master)
+        public JsonResult Update(int id,List<InvoiceViewModel> details,InvoiceViewModel master)
         {
-    
+                var invoiceMaster = _context.InvoiceMasters.Find(id);
+           
+            invoiceMaster.InvoiceSerial = master.InvoiceSerial;
+            invoiceMaster.Date = master.Date;
+            invoiceMaster.CustomerId = master.CustomerId;
 
+            List<InvoiceDetails> detailsList = _context.InvoiceDetails.Where(x=>x.InvoiceMasterId == id).ToList();
 
-            return Json("");
+            //foreach(var item in details)
+            //{
+           
+            //        Quantity = item.Quantity,
+            //        SellPrice = item.SellPrice,
+            //        ProductId = item.productId
+            //}
+
+            //invoiceMaster.InvoiceDetails = invoiceDetails;
+            
+            _context.SaveChanges();
+
+            return Json("Ok");
         }
 
 
@@ -120,9 +137,9 @@ namespace InvoiceV3.Controllers
 
             invoiceMaster.InvoiceSerial = master.InvoiceSerial;
             invoiceMaster.CustomerId = master.CustomerId;
+            invoiceMaster.Date = master.Date;
             List<InvoiceDetails> Details = new List<InvoiceDetails>();
 
-            invoiceMaster.Date = master.Date;
             foreach (var invoiceD in invoice)
             {
                 Details.Add(new InvoiceDetails

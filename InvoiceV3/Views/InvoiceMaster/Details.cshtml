@@ -3,7 +3,10 @@
 
 
 <div class="d-flex flex-row justify-content-evenly border  pt-3" >
-    <p ><b>CustomerName:</b> @Model.Customer.CustromerName </p>
+  
+  <b >CustomerName:</b><a id="invoiceByName" style="cursor:pointer">@Model.Customer.CustromerName </a>
+  
+    
     <p><b>Serial:</b> @Model.InvoiceSerial </p>
     <p><b>Date:</b> @Model.Date.ToString().Replace("12:00:00 AM", "")</p>
 </div>
@@ -30,6 +33,34 @@
     }
   </tbody>
 </table>
+<div class="container">
+<div class="allMasterDiv">
+
+</div>
+</div>
+
+<script src="~/lib/jquery/jquery.min.js"></script>
+<script>
+var customerName= $("#invoiceByName").text();
+var allMasterDiv = $('.allMasterDiv');
+$("#invoiceByName").on("click",function(){
+    $.ajax({
+      url:"/Customer/InvoiceMasterByCustomer",
+      type:"GET",
+      data:{customerName:customerName},
+     
+      success:function(data){
+              
+          allMasterDiv.html(data);
+
+            },
+})
 
 
+})
+
+
+
+
+</script>
 

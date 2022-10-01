@@ -1,8 +1,8 @@
 ﻿@model InvoiceMaster
 
 <div class="container">
-    <form id="invoiceMasterDetails "asp-controller="InvoiceMaster" asp-action="Update">
-        <input hidden asp-for="Id" />
+    <form id="invoiceMasterDetails">
+        <input  asp-for="Id" />
     <div class="form-group">
           <label >Invocie Serial</label>
           <input type="text" class="form-control" id="InvoiceSerial" value="@Model.InvoiceSerial" disabled>
@@ -51,7 +51,7 @@
            <td>@(@item.Quantity * @item.SellPrice)</td>
            <td class ="text-center operationTd  ">
                 <a class ="btn btn-danger text-center editRow">
-                <i class="fa-solid fa-pen-to-square " ></i>Edit</a>
+                <i class="fa-solid fa-pen-to-square  " ></i>Edit</a>
             </td>
             <td></td>
       </tr>
@@ -128,95 +128,119 @@ $(".editRow").on("click",function(){
     var price = rowNum.find('td:eq(3)').text();
     var price = rowNum.find('td:eq(3)').html("<input type='text' id='price' class='form-control' value='"+price+"'>")
 
-    rowNum.find('td:eq(5)').prepend("<a class ='btn btn-success saveInvoiceEdit' onclick='saveInvoiceEdit()'><i class='fa-solid fa-pen-to-square '></i>Save</button> ");
-   
+    rowNum.find('td:eq(5)')
+    .prepend("<a class ='btn btn-success saveInvoiceEdit'  ><i class='fa-solid fa-pen-to-square '></i>Save</button> ");
     
-
 })
 
 
-  function saveInvoiceEdit(){
+$(document).on('click','.saveInvoiceEdit',function(event){
+    //var rowNum = $("".saveInvoiceEdit").parent().parent();
+       var rowNum = $(this).parent().parent();
+       console.log(rowNum);
+       console.log(event);
+ 
+       var quentity = rowNum.find("td:eq(2)").find('input').val();
+       var price = rowNum.find("td:eq(3)").find('input').val();
+       
+       rowNum.find("td:eq(2)").text(quentity);
+       rowNum.find('td:eq(3)').text(price);
+       rowNum.find('td:eq(5)').find('.saveInvoiceEdit').hide();
+
+})
+
+  //function saveInvoiceEdit(e){
       
-       var rowNum = $(".saveInvoiceEdit").parent().parent();  
-       rowNum.find('input').attr("readonly", "readonly");
-       rowNum.find('.editRow').attr("disabled","disabled")
+  //     var rowNum = $(".saveInvoiceEdit").parent().parent();
+  //     console.log(e);
+ 
+  //     var quentity = rowNum.find("td:eq(2)").find('input').val();
+  //     var price = rowNum.find("td:eq(3)").find('input').val();
+       
+  //     rowNum.find("td:eq(2)").text(quentity);
+  //     rowNum.find('td:eq(3)').text(price);
+  //     rowNum.find('td:eq(5)').find('.saveInvoiceEdit').hide();
+       
+  //     //rowNum.find('input').attr("readonly", "readonly");
+  //     //rowNum.find('.editRow').attr("disabled","disabled")
 
 
-  }
+  //}
 
 
-    var arrayOfThisRow = [];
-    var master=new Object();
+    var invoiceDetails = [];
+    var invoiceMaster;
+
     function productTableTrToArray(){
        
         var InvoiceSerial = $("#InvoiceSerial").val();
-
         var Date = $("#Date").val();    
-   
         var CustomerId =$("#CustomerId").val();
-
-        master.InvoiceSerial=InvoiceSerial;
-        master.Date=Date;
-        master.CustomerId=CustomerId;
+   
+        
+        invoiceMaster={
+        InvoiceSerial:InvoiceSerial,
+        Date:Date,
+        CustomerId:CustomerId
+        };
        
         $("#updateProductTable tbody tr").each(function(){
             
             // values inside td
-            debugger;
             var Quantity  = $(this).find('td:eq(2)').text();
-       
             var Price = $(this).find('td:eq(3)').text();
-          
-            //var trRow = $('.editRow').parent().parent(); 
-            //var quantity = trRow.find("td:eq(2)").text();
-            //alert(quantity)
-            //var price = trRow.find('td:eq(3)').text();
+            var ProductId = $(this).find('td:eq(0)').text();
 
-            arrayOfThisRow.push({
-                
+            invoiceDetails.push({
                 SellPrice : Price,
-                Quantity :Quantity
-                
+                Quantity :Quantity,
+                ProductId:ProductId
             });
 
-        });
+        });   
     }
 
     // Ajax call saveinvoice action to bind the data
 
    
-    
+
     $(document).on("click",".createInvoice",(e)=>{
         var customerName = $("#CustomerId option:selected").text();
-        console.log(JSON.stringify(master))
-        //var invoice=JSON.stringify(arrayOfThisRow);
-        //console.log(invoice);
-        //JSON.stringify(master);
-        console.log(master);
-        debugger;
+        var masterId=$("#Id").val();
+        //var master=JSON.stringify(invoiceMaster);
+        //var details=JSON.stringify(invoiceDetails);
+       console.log(invoiceDetails)
+       console.log(invoiceMaster)
+       console.log(Id)
         $.ajax({
             url:"/InvoiceMaster/Update",
             type:"POST",
-            data:JSON.stringify(master),
-            contentType:"application/json; charset=utf-8",
             dataType:"json",
+            data:{id:masterId,details:invoiceDetails,master:invoiceMaster},
+            
             success:function(){
                 debugger;
                     alert("Invoice of " +  customerName  + " has been Updated Succefully!!!!");
-                    setTimeout("location.replace('https://localhost:7097/')",2000);
+                    //setTimeout("location.replace('https://localhost:7097/')",2000);
 
             },
-            //error:function(xhr,ajaxOptions,thrownError){
-            //    alert(xhr.status);
-            //    alert(thrownError);
+            error:function(xhr,ajaxOptions,thrownError){
+                alert(xhr.status);
+                alert(thrownError);
 
-            //},
+            },
             
             
         })
 
 
     });
-    
 
+
+
+
+        //var trRow = $('.editRow').parent().parent(); 
+            //var quantity = trRow.find("td:eq(2)").text();
+            //alert(quantity)
+            //var price = trRow.find('td:eq(3)').text();
 </script>
