@@ -3,7 +3,7 @@
 
 
     <div class="text-center my-4">
-            <h3 > All Invoices realted to this customer</h3>
+            <h3 > All Invoices related to this customer</h3>
 
     </div>
    
@@ -14,6 +14,7 @@
       <th scope="col">InvoiceSerial</th>
       <th scope="col">Date</th>
       <th scope="col">CustomerName</th>
+      
 
 
     </tr>
@@ -27,6 +28,7 @@
       <td>@master.InvoiceSerial</td>
       <td>@master.Date.ToString().Replace("12:00:00 AM", "")</td>
       <td>@master.Customer.CustromerName</td>
+      
 
     </tr>
     }

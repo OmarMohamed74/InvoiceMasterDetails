@@ -96,7 +96,7 @@ namespace InvoiceV3.Controllers
             List<InvoiceDetails> detailsList = _context.InvoiceDetails.Where(x=>x.InvoiceMasterId == id).ToList();
             _context.InvoiceDetails.RemoveRange(detailsList);
             invoiceMaster.InvoiceDetails.AddRange(details);
-            
+            _context.SaveChanges();
 
             return Json("Ok");
         }
