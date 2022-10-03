@@ -8,7 +8,8 @@
         
     <div class="form-group">
           <label for="exampleFormControlInput1">Invocie Serial</label>
-          <input type="text" class="form-control" id="InvoiceSerial">
+          <input type="text" class="form-control" id="InvoiceSerial" >
+          <a class=" btn btn-primary " onclick="generateSerial()" id="generatedSerial" > generateSerial</a>
     </div>
 
     <div class="form-group">
@@ -56,11 +57,11 @@
     </select>
       </td>
       <td>
-          <input type="number" class="form-control" name="Quantity" id="Quantity" >
+          <input type="number" class="form-control" name="Quantity" id="Quantity" min="1" >
           
       </td>
       <td>
-          <input type="number" class="form-control" name="SellPrice" id="prdtPriceInput" >
+          <input type="number" class="form-control" name="SellPrice" id="prdtPriceInput" min="1" >
       </td>
       <td class="text-center">
           <a class ="btn btn-success"   onclick="add()">
@@ -94,11 +95,42 @@
 </form>
 </div>
     
-
-
-
 <script src="~/lib/jquery/jquery.min.js"></script>
+<script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+
+<script src="~/js/validate.js"></script>
+
+
+
+
 <script>
+
+    function generateSerial() {
+        alert("omar");
+    
+    'use strict';
+    
+    var chars = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
+        
+        serialLength = 10,
+        
+        randomSerial = "",
+        
+        i,
+        
+        randomNumber;
+    
+    for (i = 0; i < serialLength; i = i + 1) {
+        
+        randomNumber = Math.floor(Math.random() * chars.length);
+        
+        randomSerial += chars.substring(randomNumber, randomNumber + 1);
+        
+    }
+    
+    document.getElementById('InvoiceSerial').value = randomSerial;
+    
+}
      //Get price of selected product
     $(function(){      
       $("#productSelect").change(function(){

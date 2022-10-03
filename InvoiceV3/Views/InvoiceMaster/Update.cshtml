@@ -1,25 +1,83 @@
 ﻿@model InvoiceMaster
 
+@if(Model==null){
+    <p>
+        there are nothing 
+    </p>
+
+}else{
+
+ <a class="btn btn-outline-primary   my-3" id="showHide">
+        Add Product
+      </a>
+
+<table class="table addProductUI" style="display:none">
+  <thead class="thead-dark">
+    <tr >
+      <th scope="col"></th>
+      <th scope="col">ProductName</th>
+      <th scope="col">Quantity</th>
+      <th scope="col">Price</th>
+      <th scope="col"  class="text-center">Opertaions</th>
+     
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row"></th>
+      <td>
+              <select class="form-control dropdown-toggle"  name="productId" id="productSelect">
+              <option selected>  Choose...</option>
+            @foreach (var item in ViewBag.productList)
+                {
+            
+             <option  value="@item.Id" >@item.Name</option>
+                 }
+    </select>
+      </td>
+      <td>
+          <input type="number" class="form-control" name="Quantity" id="Quantity" >
+          
+      </td>
+      <td>
+          <input type="number" class="form-control" name="SellPrice" id="prdtPriceInput" >
+      </td>
+      <td class="text-center">
+          <a class ="btn btn-success"   onclick="add()">
+          <i class="fa-solid fa-pen-to-square addProduct"></i>Add</a>
+
+          </td>
+    </tr>
+    
+  </tbody>
+</table>
+
 <div class="container">
+    <input hidden  asp-for="Id" />
+         
     <form id="invoiceMasterDetails">
-        <input  asp-for="Id" />
+       
     <div class="form-group">
+       
           <label >Invocie Serial</label>
-          <input type="text" class="form-control" id="InvoiceSerial" value="@Model.InvoiceSerial" disabled>
+          <input type="text" class="form-control" id="InvoiceSerial" value="@Model.InvoiceSerial">
     </div>
 
     <div class="form-group">
           <label >Date</label>
-          <input  class="form-control" id="Date" disabled value="@Model.Date.ToString().Replace("12:00:00 AM","")" >
+          <input  class="form-control" id="Date"  value="@Model.Date.ToString().Replace("12:00:00 AM"," ")" >
     </div>
-
-
 
      <div class="form-group">
           <label >CustomerName</label>
-          <select class="form-control"  id="CustomerId" disabled>
+          <select class="form-control"  id="CustomerId" >
 
            <option  value="@Model.Customer.Id" selected >@Model.Customer.CustromerName</option>
+           @foreach (var item in ViewBag.CustomerList)
+        {
+            
+            <option  value="@item.Id" >@item.CustromerName</option>
+        }
         
     </select>
       
@@ -50,8 +108,11 @@
            <td>@item.SellPrice</td>
            <td>@(@item.Quantity * @item.SellPrice)</td>
            <td class ="text-center operationTd  ">
-                <a class ="btn btn-danger text-center editRow">
+                <a class ="btn btn-primary text-center editRow">
                 <i class="fa-solid fa-pen-to-square  " ></i>Edit</a>
+
+                <a class ="btn btn-danger text-center deleteRow" value="@item.Id">
+                <i class="fa-solid fa-pen-to-square  " ></i>Delete</a>
             </td>
             <td></td>
       </tr>
@@ -65,10 +126,16 @@
                 <i class="fa-solid fa-pen-to-square " ></i>Save Invoice</button>
 </form>
 </div>
- 
+ }
 <script src="/lib/jquery/jquery.min.js"> </script>
 <script>
 
+    
+$(document).ready(function(){
+    $('#showHide').click(function() {
+      $('.addProductUI').toggle("slide");
+    });
+});
 
 
 
@@ -207,22 +274,14 @@ $(document).on('click','.saveInvoiceEdit',function(event){
     $(document).on("click",".createInvoice",(e)=>{
         var customerName = $("#CustomerId option:selected").text();
         var masterId=$("#Id").val();
-        //var master=JSON.stringify(invoiceMaster);
-        //var details=JSON.stringify(invoiceDetails);
-       console.log(invoiceDetails)
-       console.log(invoiceMaster)
-       console.log(Id)
         $.ajax({
             url:"/InvoiceMaster/Update",
             type:"POST",
             dataType:"json",
             data:{id:masterId,details:invoiceDetails,master:invoiceMaster},
-            
             success:function(){
-                debugger;
-                    alert("Invoice of " +  customerName  + " has been Updated Succefully!!!!");
-                    //setTimeout("location.replace('https://localhost:7097/')",2000);
-
+                    location.reload();
+                    alert("Invoice of " +  customerName  + " has been Updated Succefully!!!!");    
             },
             error:function(xhr,ajaxOptions,thrownError){
                 alert(xhr.status);
@@ -238,6 +297,68 @@ $(document).on('click','.saveInvoiceEdit',function(event){
 
 
 
+    $(document).on("click",".deleteRow",function(event){
+            var detailId=$(event.target).attr("value");
+            var y=$(".deleteRow").parent().parent();
+            x=$(this)
+            console.log(detailId)
+             
+        $.ajax({
+            url:"/InvoiceDetails/Delete",
+            type:"Delete",
+            dataType:"json",
+            data:{detailId:detailId},
+            success:function(){
+                   
+                 x.closest("tr").remove();
+               alert("Product Removed !!!!")
+               location.reload();
+
+            }
+        })
+
+
+    })
+
+
+     //Get price of selected product
+    $(function(){      
+      $("#productSelect").change(function(){
+      $.ajax({
+            url:"/InvoiceMaster/GetPriceOfProduct",
+            type:"GET",
+            data:{id: $("#productSelect").val()},
+            dataType:"json",
+            success:function(result){
+         
+                $("#prdtPriceInput").val(result);
+            },
+            error:function(xhr,ajaxOptions,thrownError){
+                alert(xhr.status),
+                alert(thrownError)
+            }
+        });
+
+        });
+    });
+   
+
+        // Add product as a Tr in table
+
+    function add(){
+        var productId = $("#productSelect option:selected").val();
+        var ProductName = $("#productSelect option:selected").text();
+        var Quantity = $("#Quantity").val();
+        var Price = $("#prdtPriceInput").val();
+        var totalPrice = Price*Quantity;
+
+        var tableRt= "<tr><td>" + productId + "</td><td>"+ ProductName +"</td><td >" + Quantity + "</td><td >" + Price + "</td><td>"+ totalPrice + "</td><td class='text-center operationTd' ><a class ='btn btn-primary text-center editRow'> <i class='fa-solid fa-pen-to-square ' ></i>Edit</a><a class ='btn btn-danger text-center deleteRow' ><i class='fa-solid fa-pen-to-square '></i>Delete</a></td> </tr>"
+       
+        $(".productList tbody")
+        .append(tableRt);
+
+        $("#Quantity").val('');
+    };
 
         //var trRow = $('.editRow').parent().parent(); 
             //var quantity = trRow.find("td:eq(2)").text();
