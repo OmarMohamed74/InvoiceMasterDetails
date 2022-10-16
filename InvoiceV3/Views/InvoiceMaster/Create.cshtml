@@ -98,7 +98,7 @@
         </tbody>
 </table>
 
-<a class ="btn btn-success float-end my-5 createInvoice "  onclick="productTableTrToArray()" >
+<a class ="btn btn-success float-end my-5 createInvoice " onclick="productTableTrToArray()" >
     <i class="fa-solid fa-pen-to-square "></i>
     Create Invoice</a>
 </form>
@@ -107,7 +107,7 @@
 <script src="~/lib/jquery/jquery.min.js"></script>
 <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
 
-<script src="~/js/validate.js"></script>
+
 
 
 
@@ -239,6 +239,7 @@
             data:{invoice:arrayOfThisRow,master:invoiceMaster},
             dataType:'json',
             success:function(){
+
                     alert("Invoice of " +  customerName  + " has been saved Succefully!!!!");
                     location.reload();
 
@@ -260,5 +261,5 @@
 </script>
 
 
-
+<script src="~/js/validate.js"></script>
 

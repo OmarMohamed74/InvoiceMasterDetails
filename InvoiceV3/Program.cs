@@ -6,11 +6,20 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddCors(o => o.AddPolicy("AllowAllOrigins", builder =>
+{
+    builder.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+}));
+
 // DbContext configuration
 var connectionStrings = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<InvoiceDbContext>(options =>
 options.UseSqlServer(connectionStrings));
+
+
 
 var app = builder.Build();
 

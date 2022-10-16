@@ -19,7 +19,7 @@ namespace InvoiceV3.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return Redirect("http://omarmohamed/Reports2022/report/TotalInvoice");
         }
 
         public IActionResult Privacy()
